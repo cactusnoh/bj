@@ -55,7 +55,6 @@ int main()
   std::cin.tie(0); std::cout.tie(0);
 
   std::cin >> N;
-  seq[0] = 2147000000;
   for(int i = 1; i <= N; ++i)
     std::cin >> seq[i];
 
