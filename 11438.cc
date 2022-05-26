@@ -1,43 +1,23 @@
 #include <iostream>
+#include <vector>
 
 #define LOG 17
 
 int N, M;
 int parent[100'001][LOG + 1];
+std::vector<int> adj_list[100'001];
 int height[100'001];
-
-int get_height(int n)
-{
-  if(n == 1) {
-    return 1;
-  }
-
-  int &ret = height[n];
-
-  if(ret != 0) {
-    return ret;
-  }
-  
-  for(int i = LOG; i >= 0; --i) {
-    if(parent[n][i] != 0) {
-      ret = (1 << i) + get_height(parent[n][i]);
-      break;
-    }
-  }
-
-  return ret;
-}
 
 int LCA(int a, int b)
 {
-  if(get_height(a) > get_height(b)) {
+  if(height[a] > height[b]) {
     int temp = a;
     a = b;
     b = temp;
   }
 
   for(int j = LOG; j >= 0; --j) {
-    if(get_height(parent[b][j]) >= get_height(a)) {
+    if(height[parent[b][j]] >= height[a]) {
       b = parent[b][j];
     }
   }
@@ -55,6 +35,22 @@ int LCA(int a, int b)
   return parent[a][0];
 }
 
+void build_tree(int n)
+{
+
+  for(size_t i = 0; i < adj_list[n].size(); ++i) {
+    int next = adj_list[n][i];
+
+    if(parent[n][0] == next) {
+      continue;
+    }
+
+    parent[next][0] = n;
+    height[next] = height[n] + 1;
+    build_tree(next);
+  }
+}
+
 int main()
 {
   std::ios_base::sync_with_stdio(false);
@@ -63,22 +59,15 @@ int main()
 
   std::cin >> N;
 
-  parent[1][0] = 1;
-
   int a, b;
   for(int i = 0; i < N - 1; ++i) {
     std::cin >> a >> b;
-
-    if(parent[b][0] != 0) {
-      int temp = a;
-      a = b;
-      b = temp;
-    }
-    
-    parent[b][0] = a;
+    adj_list[a].push_back(b);
+    adj_list[b].push_back(a);
   }
 
-  parent[1][0] = 0;
+  height[1] = 1;
+  build_tree(1);
 
   for(int j = 1; j < LOG + 1; ++j) {
     for(int i = 1; i <= N; ++i) {
