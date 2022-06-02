@@ -1,13 +1,15 @@
 #include <iostream>
 
 // Merge sort implementation
-/*
-#include <unordered_map>
-
 int N;
+
+int col1[500'000];
+int col2[1'000'000];
 int seq[500'000];
+
+int left[250'001], right[250'001];
+
 long long ans;
-std::unordered_map<int, int> map;
 
 void merge_sort(size_t beg, size_t end)
 {
@@ -20,31 +22,31 @@ void merge_sort(size_t beg, size_t end)
   merge_sort(beg, mid);
   merge_sort(mid + 1, end);
 
-  int left[mid - beg + 1], right[end - mid];
+  size_t left_size = mid - beg + 1, right_size = end - mid;
   size_t left_cur = 0, right_cur = 0, orig_cur = beg;
 
-  for(size_t i = 0; i < mid - beg + 1; ++i) {
+  for(size_t i = 0; i < left_size; ++i) {
     left[i] = seq[beg + i];
   }
 
-  for(size_t i = 0; i < end - mid; ++i) {
+  for(size_t i = 0; i < right_size; ++i) {
     right[i] = seq[mid + 1 + i];
   }
 
-  while(left_cur < mid - beg + 1 && right_cur < end - mid) {
+  while(left_cur < left_size && right_cur < right_size) {
     if(left[left_cur] > right[right_cur]) {
       seq[orig_cur++] = right[right_cur++];
-      ans += (mid - beg + 1) - left_cur;
+      ans += (left_size) - left_cur;
     } else {
       seq[orig_cur++] = left[left_cur++];
     }
   }
 
-  while(left_cur < mid - beg + 1) {
+  while(left_cur < left_size) {
     seq[orig_cur++] = left[left_cur++];
   }
 
-  while(right_cur < end - mid) {
+  while(right_cur < right_size) {
     seq[orig_cur++] = right[right_cur++];
   }
 }
@@ -58,13 +60,16 @@ int main()
 
   int temp;
   for(int i = 0; i < N; ++i) {
-    std::cin >> temp;
-    map[temp] = i;
+    std::cin >> col1[i];
   }
 
   for(int i = 0; i < N; ++i) {
     std::cin >> temp;
-    seq[i] = map[temp];
+    col2[temp] = i;
+  }
+
+  for(int i = 0; i < N; ++i) {
+    seq[col2[col1[i]]] = i;
   }
 
   merge_sort(0, N - 1);
@@ -74,8 +79,8 @@ int main()
   return 0;
 }
 
-*/
-
+// Segment tree implementation
+/*
 int N;
 int row_1[500'001];
 int row_2[1'000'001];
@@ -147,3 +152,4 @@ int main()
 
   return 0;
 }
+*/

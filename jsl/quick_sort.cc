@@ -13,10 +13,15 @@ int partition(int l, int r)
 
   while(1) {
     while(a[++i] < v);
-    while(a[--j] > v)
+
+    while(a[--j] > v) {
       if(j == l) 
         break;
-    if(i >= j) break;
+    }
+
+    if(i >= j) {
+      break;
+    }
 
     temp = a[i];
     a[i] = a[j];
@@ -35,26 +40,32 @@ void quick_sort(int l, int r)
   if(l >= r)
     return;
 
-  int temp, mid = (l + r) / 2;
+  int temp, mid = (l + r) >> 1;
+
   temp = a[mid];
   a[mid] = a[r - 1];
   a[r - 1] = temp;
+
   if(a[l] > a[r - 1]) {
     temp = a[l];
     a[l] = a[r - 1];
     a[r - 1] = temp;
   }
+
   if(a[r - 1] > a[r]) {
     temp = a[r - 1];
     a[r - 1] = a[r];
     a[r] = temp;
   }
+
   if(a[l] > a[r - 1]) {
     temp = a[l];
     a[l] = a[r - 1];
     a[r - 1] = temp;
   }
+
   int i = partition(l + 1, r - 1);
+  
   quick_sort(l, i - 1);
   quick_sort(i + 1, r);
 }
