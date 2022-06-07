@@ -1,31 +1,37 @@
-#include <iostream>
+#include <vector>
 
-#define MASK 15
-
-int N;
-
-inline int abs(int a)
+inline int max(int a, int b)
 {
-  return a < 0 ? -a : a;
+  return a < b ? b : a;
 }
 
-int upper_bound(int arr[], int beg, int end, int x)
-{
-  int mid;
-  while(beg < end) {
-    mid = beg + ((end - beg) >> 1);
-    if(arr[mid] > x)
-      end = mid;
-    else
-      beg = mid + 1;
-  }
-  return end;
-}
+int memo[100'000];
 
-int main()
+int solution(std::vector<int> sticker)
 {
-  std::cin >> N;
-  int arr[10] = {1, 1, 2, 3, 3, 3, 4, 5, 19, 19};
-  std::cout << upper_bound(arr, 0, 9, N) << std::endl;
-  return 0;
+    int answer = 0;
+    int N = sticker.size();
+
+    if (N == 1) {
+      return sticker[0];
+    }
+
+    memo[0] = sticker[0];
+    memo[1] = sticker[0];
+
+    for (int curr = 2; curr < N - 1; ++curr) {
+      memo[curr] = max(sticker[curr] + memo[curr - 2], memo[curr - 1]);
+    }
+    memo[N - 1] = memo[N - 2];
+    answer = memo[N - 1];
+
+    memo[0] = 0;
+    memo[1] = sticker[1];
+
+    for (int curr = 2; curr < N; ++curr) {
+      memo[curr] = max(sticker[curr] + memo[curr - 2], memo[curr - 1]);
+    }
+    answer = max(answer, memo[N - 1]);
+
+    return answer;
 }
