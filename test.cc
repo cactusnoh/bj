@@ -1,37 +1,52 @@
+#include <string>
 #include <vector>
+#include <iostream>
+#include <algorithm>
+#include <queue>
 
-inline int max(int a, int b)
-{
-  return a < b ? b : a;
+using Millisec = int;
+using pmm = std::pair<Millisec, Millisec>;
+
+Millisec ConvertTime(std::string timestamp) {
+  size_t first_colon = timestamp.find_first_of(':');
+  size_t second_colon = timestamp.find_first_of(':', first_colon + 1);
+
+  double hour = std::stod(timestamp.substr(0, first_colon));
+  double minute = std::stod(timestamp.substr(first_colon + 1, second_colon - first_colon));
+  double second = std::stod(timestamp.substr(second_colon + 1));
+
+  return (hour * 3600 + minute * 60 + second) * 1000;
 }
 
-int memo[100'000];
+int solution(std::vector<std::string> lines) {
+  std::vector<pmm> requests;
+  int answer = 0;
 
-int solution(std::vector<int> sticker)
-{
-    int answer = 0;
-    int N = sticker.size();
+  for (int i = 0; i < lines.size(); ++i) {
+    size_t first_space = lines[i].find_first_of(' ');
+    size_t last_space = lines[i].find_last_of(' ');
+    size_t s_idx = lines[i].find_last_of('s');
 
-    if (N == 1) {
-      return sticker[0];
+    Millisec timestamp = ConvertTime(lines[i].substr(first_space + 1, 12));
+    Millisec duration = std::stod(lines[i].substr(last_space + 1, s_idx - last_space)) * 1000;
+
+    requests.push_back(pmm(timestamp - duration + 1, timestamp));
+  }
+
+  for (int i = 0; i < requests.size(); ++i) {
+    int count = 1;
+    Millisec interval_end = requests[i].second + 1000;
+
+    for (int j = i + 1; j < requests.size(); ++j) {
+      if (interval_end > requests[j].first) {
+        count++;
+      }
     }
 
-    memo[0] = sticker[0];
-    memo[1] = sticker[0];
-
-    for (int curr = 2; curr < N - 1; ++curr) {
-      memo[curr] = max(sticker[curr] + memo[curr - 2], memo[curr - 1]);
+    if (answer < count) {
+      answer = count;
     }
-    memo[N - 1] = memo[N - 2];
-    answer = memo[N - 1];
-
-    memo[0] = 0;
-    memo[1] = sticker[1];
-
-    for (int curr = 2; curr < N; ++curr) {
-      memo[curr] = max(sticker[curr] + memo[curr - 2], memo[curr - 1]);
-    }
-    answer = max(answer, memo[N - 1]);
-
-    return answer;
+  }
+  
+  return answer;
 }
