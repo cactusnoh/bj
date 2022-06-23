@@ -50,6 +50,8 @@
     "queue": "cpp",
     "set": "cpp",
     "ctime": "cpp",
-    "iomanip": "cpp"
+    "iomanip": "cpp",
+    "unordered_set": "cpp",
+    "time.h": "c"
   }
 }
