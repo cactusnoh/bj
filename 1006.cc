@@ -1,139 +1,111 @@
 #include <iostream>
 #include <cstring>
 
-// States
-#define NONE 0
-#define UP 1
-#define DOWN 2
-#define BOTH 3
-#define UP_DOWN 4
-
 #define INF 2147000000
 
-inline int max(int a, int b)
-{
-  return a < b ? b : a;
+// Available tile
+#define UPPER 0
+#define LOWER 1
+#define ALL 2
+#define NONE 3
+
+inline int min(int a, int b) {
+  return a < b ? a : b;
 }
 
 int T, N, W;
-int people[2][10000];
-int dp[10000][5][5];
+int rooms[10001][2];
+int memo[10001][4];
+int init_mode;
 
-
-int solve(int idx, int last, int curr)
-{
-  if(dp[idx][last][curr] != -1) {
-    return dp[idx][last][curr];
+int solve(int section, int mode) {
+  if (section == N) {
+    return (mode == init_mode ? 0 : INF);
   }
 
-  int left_idx = (idx - 1 + N) % N;
-
-  if(curr == UP) {
-    if(people[0][idx] + people[0][left_idx] > W) {
-      dp[idx][last][curr] = -INF;
-      return -INF;
-    }
-  } else if(curr == DOWN) {
-    if(people[1][idx] + people[1][left_idx] > W) {
-      dp[idx][last][curr] = -INF;
-      return -INF;
-    }
-  } else if(curr == BOTH) {
-    if(people[0][idx] + people[0][left_idx] > W || 
-       people[1][idx] + people[1][left_idx] > W) {
-      dp[idx][last][curr] = -INF;
-      return -INF;
-    }
-  } else if(curr == UP_DOWN) {
-    if(people[0][idx] + people[1][idx] > W) {
-      dp[idx][last][curr] = -INF;
-      return -INF;
-    }
+  if (memo[section][mode] != -1) {
+    return memo[section][mode];
   }
 
-  if(idx == N - 1) {
-    if(last != curr) {
-      return -INF;
-    }
-    switch(curr) {
-      case NONE:
-      return 0;
-      case UP: case DOWN: case UP_DOWN:
-      return 1;
-      case BOTH: 
-      return 2;
-    }
-  }
+  int &ret = memo[section][mode];
+  ret = INF;
 
-  int ret = -INF;
-  if(curr == NONE) {
-    ret = max(ret, solve(idx + 1, last, NONE));
-    ret = max(ret, solve(idx + 1, last, UP));
-    ret = max(ret, solve(idx + 1, last, DOWN));
-    ret = max(ret, solve(idx + 1, last, BOTH));
-    ret = max(ret, solve(idx + 1, last, UP_DOWN));
-  } else if(curr == UP) {
-    ret = max(ret, 1 + solve(idx + 1, last, NONE));
-    ret = max(ret, 1 + solve(idx + 1, last, DOWN));
-    ret = max(ret, 1 + solve(idx + 1, last, UP_DOWN));
-  } else if(curr == DOWN) {
-    ret = max(ret, 1 + solve(idx + 1, last, NONE));
-    ret = max(ret, 1 + solve(idx + 1, last, UP));
-    ret = max(ret, 1 + solve(idx + 1, last, UP_DOWN));
-  } else if(curr == BOTH) {
-    ret = max(ret, 2 + solve(idx + 1, last, NONE));
-    ret = max(ret, 2 + solve(idx + 1, last, UP_DOWN));
-  } else if(curr == UP_DOWN) {
-    ret = max(ret, 1 + solve(idx + 1, last, NONE));
-    ret = max(ret, 1 + solve(idx + 1, last, UP_DOWN));
+  int next_section = (section + 1) % N;
+  if (mode == UPPER) {
+    if (rooms[section][0] + rooms[next_section][0] <= W) {
+      ret = min(ret, 1 + solve(section + 1, LOWER));
+    }
+    ret = min(ret, 1 + solve(section + 1, ALL));
+  } else if (mode == LOWER) {
+    if (rooms[section][1] + rooms[next_section][1] <= W) {
+      ret = min(ret, 1 + solve(section + 1, UPPER));
+    }
+    ret = min(ret, 1 + solve(section + 1, ALL));
+  } else if (mode == ALL) {
+    if (rooms[section][0] + rooms[section][1] <= W) {
+      ret = min(ret, 1 + solve(section + 1, ALL));
+    } else {
+      ret = min(ret, 2 + solve(section + 1, ALL));
+    }
+    if (rooms[section][0] + rooms[next_section][0] <= W) {
+      ret = min(ret, 2 + solve(section + 1, LOWER));
+    }
+    if (rooms[section][1] + rooms[next_section][1] <= W) {
+      ret = min(ret, 2 + solve(section + 1, UPPER));
+    }
+    if (rooms[section][0] + rooms[next_section][0] <= W &&
+        rooms[section][1] + rooms[next_section][1] <= W) {
+      ret = min(ret, 2 + solve(section + 1, NONE));
+    }
+  } else {
+    ret = solve(section + 1, ALL);
   }
-
-  dp[idx][last][curr] = ret;
 
   return ret;
 }
 
-int main()
-{
+int main(void) {
   std::ios_base::sync_with_stdio(false);
-  std::cin.tie(0); std::cout.tie(0);
+  std::cin.tie(0);
+  std::cout.tie(0);
 
   std::cin >> T;
 
-  for(int i = 0; i < T; ++i) {
+  for (int tc = 1; tc <= T; ++tc) {
     std::cin >> N >> W;
-
-    memset(dp, -1, sizeof(dp));
-
-    for(int j = 0; j < N; ++j) {
-      std::cin >> people[0][j];
+    for (int i = 0; i < N; ++i) {
+      std::cin >> rooms[i][0];
     }
-    for(int j = 0; j < N; ++j) {
-      std::cin >> people[1][j];
+    for (int i = 0; i < N; ++i) {
+      std::cin >> rooms[i][1];
     }
 
-    int ans = 0;
-    ans = max(ans, solve(0, NONE, NONE));
-    ans = max(ans, solve(0, NONE, UP));
-    ans = max(ans, solve(0, NONE, DOWN));
-    ans = max(ans, solve(0, NONE, BOTH));
-    ans = max(ans, solve(0, NONE, UP_DOWN));
+    int answer = INF;
 
-    ans = max(ans, solve(0, UP, NONE));
-    ans = max(ans, solve(0, UP, DOWN));
-    ans = max(ans, solve(0, UP, UP_DOWN));
+    if (rooms[N - 1][1] + rooms[0][1] <= W) {
+      memset(memo, -1, sizeof(memo));
+      init_mode = UPPER;
+      answer = min(answer, solve(0, UPPER));
+    }
 
-    ans = max(ans, solve(0, DOWN, NONE));
-    ans = max(ans, solve(0, DOWN, UP));
-    ans = max(ans, solve(0, DOWN, UP_DOWN));
+    if (rooms[N - 1][0] + rooms[0][0] <= W) {
+      memset(memo, -1, sizeof(memo));
+      init_mode = LOWER;
+      answer = min(answer, solve(0, LOWER));
+    }
+    
+    memset(memo, -1, sizeof(memo));
+    init_mode = ALL;
+    answer = min(answer, solve(0, ALL));
 
-    ans = max(ans, solve(0, BOTH, NONE));
-    ans = max(ans, solve(0, BOTH, UP_DOWN));
+    if (rooms[N - 1][0] + rooms[0][0] <= W &&
+        rooms[N - 1][1] + rooms[0][1] <= W) {
+      memset(memo, -1, sizeof(memo));
+      init_mode = NONE;
+      answer = min(answer, solve(0, NONE));
+    }
 
-    ans = max(ans, solve(0, UP_DOWN, NONE));
-    ans = max(ans, solve(0, UP_DOWN, UP_DOWN));
-
-    std::cout << 2 * N - ans << "\n";
+    std::cout << answer << "\n";
   }
 
   return 0;
