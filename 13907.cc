@@ -53,10 +53,10 @@ void BFS() {
     }
 
     for (const auto &next : adj_list[curr.dest]) {
-      if (next.cost + dist[curr.dest][curr.length] < min_dist[next.dest]) {
-        min_dist[next.dest] = next.cost + dist[curr.dest][curr.length];
-        dist[next.dest][curr.length + 1] = next.cost + dist[curr.dest][curr.length];
-        Q.emplace(next.dest, next.cost + dist[curr.dest][curr.length], curr.length + 1);
+      int next_dist = next.cost + curr.dist;
+      if (next_dist < min_dist[next.dest]) {
+        min_dist[next.dest] = dist[next.dest][curr.length + 1] = next_dist;
+        Q.emplace(next.dest, next_dist, curr.length + 1);
       }
     }
   }
