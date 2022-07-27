@@ -2,31 +2,42 @@
 #include <cstring>
 
 int N, M;
-int weight[100'001];
-int set[100'001];
+long long diff[100'001];
+int parent[100'001];
 int rank[100'001];
 
-void unionize(int a, int b) {
-  a = find_set(a);
-  b = find_set(b);
-
-  if (rank[a] < rank[b]) {
-    int temp = a;
-    a = b;
-    b = temp;
-  }
-  set[b] = a;
-
-  if (rank[a] == rank[b]) {
-    rank[a]++;
-  }
+void swap(int *a, int *b) {
+  int temp = *a;
+  *a = *b;
+  *b = temp;
 }
 
 int find_set(int n) {
-  if (set[n] == n) {
+  if (parent[n] == n) {
     return n;
   }
-  return (set[n] = find_set(set[n]));
+  int parent_n = find_set(parent[n]);
+  diff[n] += diff[parent[n]];
+  return (parent[n] = parent_n);
+}
+
+void unionize(int a, int b, int w) {
+  int parent_a = find_set(a);
+  int parent_b = find_set(b);
+
+  if (parent_a == parent_b) {
+    return;
+  } else if (rank[parent_a] < rank[parent_b]) {
+    swap(&parent_a, &parent_b);
+    swap(&a, &b);
+    w = -w;
+  }
+  if (rank[parent_a] == rank[parent_b]) {
+    ++rank[parent_a];
+  }
+
+  diff[parent_b] = diff[a] + w - diff[b];
+  parent[parent_b] = parent_a;
 }
 
 int main() {
@@ -42,9 +53,9 @@ int main() {
     }
 
     for (int i = 1; i <= N; ++i) {
-      set[i] = i;
+      parent[i] = i;
       rank[i] = 0;
-      weight[i] = 0;
+      diff[i] = 0;
     }
 
     for (int i = 0; i < M; ++i) {
@@ -52,14 +63,15 @@ int main() {
       int a, b;
       std::cin >> cmd >> a >> b;
       if (cmd == '!') {
-        int diff;
-        std::cin >> diff;
-        if (rank[find_set(a)] == 0 && rank[find_set(b)] == 0) {
-          unionize(a, b);
-          weight[b] = diff;
-        } else if ()
+        int w;
+        std::cin >> w;
+        unionize(a, b, w);
       } else {
-
+        if (find_set(a) == find_set(b)) {
+          std::cout << diff[b] - diff[a] << "\n";
+        } else {
+          std::cout << "UNKNOWN" << "\n";
+        }
       }
     }
   }
