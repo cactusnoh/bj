@@ -77,6 +77,7 @@ int main() {
     std::vector<Point> convex_hull;
     for (auto i = 0; i < N; ++i) {
       size_t sz = convex_hull.size();
+      // beware of while!
       while (sz >= 2 && ccw(convex_hull[sz - 2], convex_hull[sz - 1], points[i]) <= 0) {
         --sz;
         convex_hull.pop_back();
