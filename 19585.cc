@@ -69,7 +69,8 @@ int main() {
     }
   }
 
-  //delete color_root;
+  // Deallocating makes TLE
+  // delete color_root;
 
   return 0;
 }
