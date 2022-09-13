@@ -17,7 +17,7 @@ void tokenizer(std::vector<std::string> &token, const std::string &s, const char
 }
 
 int main() {
-    std::string s = "222222222333394949";
+    std::string s = "21101393394093490";
     std::vector<std::string> token;
 
     tokenizer(token, s, "01");

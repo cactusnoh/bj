@@ -79,6 +79,7 @@
     "ratio": "cpp",
     "stack": "cpp",
     "variant": "cpp",
-    "__functional_base": "cpp"
+    "__functional_base": "cpp",
+    "numbers": "cpp"
   }
 }
