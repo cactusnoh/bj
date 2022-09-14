@@ -1,7 +1,6 @@
 #include <iostream>
 #include <vector>
 #include <queue>
-#include <algorithm>
 
 #define INF 0x7fffffff
 #define min(a, b) (a < b ? a : b);
@@ -77,7 +76,7 @@ int solve(int (*memo)[11], int visited, int curr) {
     return 0;
   }
 
-  // For all points not visited, calculate minimum
+  // For all points that are not visited, calculate minimum
   int ret = INF;
   for (size_t i = 0; i < dirty.size(); ++i) {
     if ((visited & (1 << i)) == 0) {
@@ -114,7 +113,7 @@ int main(void) {
         }
       }
     }
-    dirty.emplace(dirty.begin(), cleaner); // insert starting position to 0th index
+    dirty.emplace(dirty.begin(), cleaner); // insert cleaner position to 0th index
 
     for (size_t i = 0; i < dirty.size(); ++i) {
       BFS(i, dist[i]); // Get distance from one point to every other point
@@ -140,7 +139,7 @@ int main(void) {
       }
     }
 
-    // start from initial cleaner
+    // start from initial cleaner position
     std::cout << solve(memo, 1, 0) << "\n";
   }
 
