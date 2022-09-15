@@ -22,10 +22,6 @@ int map[100][100];
 
 /* Use BFS to figure out whether there is a path from (0,0) to (n-1,n-1) */
 bool BFS(int min_num, int max_num) {
-  if (map[0][0] < min_num || map[0][0] > max_num) {
-    return false;
-  }
-
   std::queue<Pos> Q;
   bool visited[100][100] = {false};
 
@@ -67,16 +63,22 @@ int main() {
     }
   }
 
-  // Binary search of difference
+  // Binary search for minimum difference
   int min_diff = 0x7fffffff;
   int left = abs(map[0][0] - map[N - 1][N - 1]);
   int right = global_max - global_min;
   while (right >= left) {
     int diff = (left + right) / 2;
     // For diff, try out BFS for all possible min_num and max_num
+    // min_num: minimum number BFS can visit
+    // max_num: maximum number BFS can visit
     bool success = false;
     for (int min_num = global_min; min_num <= global_max - diff; ++min_num) {
       int max_num = min_num + diff;
+      if (min_num > map[0][0] || min_num > map[N - 1][N - 1] ||
+          max_num < map[0][0] || max_num < map[N - 1][N - 1]) {
+        continue;
+      }
       if (BFS(min_num, max_num)) {
         success = true;
         break;
