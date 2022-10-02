@@ -2,6 +2,7 @@
 #include <queue>
 #include <vector>
 
+// sorts array with 3 elements
 void sort(std::vector<int> &A) {
   if (A[0] > A[1]) {
     int temp = A[0];
@@ -31,10 +32,12 @@ int main(void) {
   std::cin >> A >> B >> C;
 
   if ((A + B + C) % 3 != 0) {
+    // A == B == C is impossible
     std::cout << 0 << "\n";
     return 0;
   }
 
+  // Do BFS
   std::queue<std::vector<int>> Q;
 
   std::vector<int> init{A, B, C};
@@ -48,6 +51,7 @@ int main(void) {
     Q.pop();
 
     if (curr[0] == curr[1] && curr[1] == curr[2]) {
+      // Three numbers are same. Done.
       possible = true;
       break;
     }
