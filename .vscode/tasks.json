@@ -12,7 +12,8 @@
 				"-o",
 				"${fileDirname}/${fileBasenameNoExtension}.out",
 				"-Wall",
-				"-Werror"
+				"-Werror",
+				"-g",
 			],
 			"options": {
 				"cwd": "${fileDirname}"
